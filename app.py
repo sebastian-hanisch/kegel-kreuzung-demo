@@ -185,7 +185,7 @@ st.markdown(
 | **Die Kreuzung liegt bei d ≈ 16 bis 32** | Nur für die eigene dichte Barriere gegen das eigene ADMM mit dünnem A. Die echten Löser kreuzen erst bei d ≈ 128 bis 256 (Experiment 5), weil Clarabel dünn besetzt rechnet. | – |
 | **Innere Punkte skalieren schlecht** | Nur bei dieser Familie: jede Kegelzeile berührt die gemeinsamen Variablen, die Faktorisierung füllt auf (Clarabel braucht bei d = 256 über 100 Sekunden für 19 Schritte). Bei Programmen mit dünn gekoppelten Kegeln ist das anders. | – |
 | **Ein ADMM-Schritt ist immer um den Faktor d billiger** | Bei kleinem d verdeckt fester Aufwand (Python, kleine Matrizen) die Steigung; gemessen ist bis d = 64 eine Steigung unter 1, die Vormessung bis d = 128 etwa 1,5 bis 1,8. | – |
-| **ADMM ist ohne Weiteres schnell** | Nur mit dünn besetztem A: dasselbe Verfahren mit dichtem A ist bei d = 64 um ein Vielfaches langsamer (Experiment 4); der Gewinn kommt aus der Struktur. | – |
+| **ADMM ist ohne Weiteres schnell** | Nur mit dünn besetztem A: dasselbe Verfahren mit dichtem A ist bei d = 64 deutlich langsamer (Experiment 4); der Gewinn kommt aus der Struktur. | – |
 | **Die Familie ist typisch** | Eine Familie, ein Kegel (Lorentz), ein Satz gemeinsamer Variablen. Lasso, LP oder Probleme mit einem Kegel je Variable kreuzen woanders; PDLP (nur LP) und GPUs sind hier nicht gemessen. | Stück 16 |
 | **Die Zeiten gelten allgemein** | Sie hängen vom Rechner ab; getestet wird nur ihre Struktur (Steigungen, Reihenfolge, Kreuzung in einem weiten Band). Die Tabelle der echten Löser ist eine eingefrorene Messung. | – |
 """
