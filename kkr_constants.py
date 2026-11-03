@@ -28,9 +28,9 @@ PRESETS = {
 PRESET_HELP = {
     "Standardfall: Dimensionen bis 32, Ziel 10⁻⁶": "Die Kugel von 4d Punkten in d Dimensionen für d = 4, 8, 16, 32; Barriere und ADMM bis Wertfehler 10⁻⁶. Etwa bei d = 16 bis 32 kreuzen sich die Zeiten.",
     "Kleine Programme (bis d = 16): die Barriere liegt vorn": "Nur d = 4, 8, 16: hier ist die Barriere bei Ziel 10⁻⁶ schneller (wie in Stück 9); die Kreuzung liegt noch rechts.",
-    "Bis d = 64: ADMM liegt deutlich vorn": "Bis d = 64 (die eigene dichte Barriere braucht dafür etwa 15 Sekunden): ADMM ist dort um ein Vielfaches schneller.",
-    "Grobes Ziel 10⁻³: die Kreuzung kommt kaum früher": "Wertfehler 10⁻³ statt 10⁻⁶: die Kreuzung liegt auch hier bei d = 16 bis 32; die Genauigkeit verschiebt sie kaum.",
-    "Hohes Ziel 10⁻⁹: kaum später": "Wertfehler 10⁻⁹: ADMM braucht nur etwa das Zehnfache der Schritte von 10⁻³, die Kreuzung verschiebt sich kaum.",
+    "Bis d = 64: ADMM liegt deutlich vorn": "Bis d = 64 (die eigene dichte Barriere braucht dafür etwa 15 bis 20 Sekunden): ADMM ist dort um ein Vielfaches schneller.",
+    "Grobes Ziel 10⁻³: die Kreuzung kommt kaum früher": "Wertfehler 10⁻³ statt 10⁻⁶: die Kreuzung liegt auch hier bei d = 16 bis 32; die Genauigkeit verschiebt sie um weniger als einen Rasterschritt (der Vorsprung von ADMM ist bei d = 64 aber größer).",
+    "Hohes Ziel 10⁻⁹: kaum später": "Wertfehler 10⁻⁹: die Kreuzung verschiebt sich um weniger als einen Rasterschritt, der Vorsprung von ADMM bei d = 64 schrumpft aber von etwa dem 25- bis 29fachen (10⁻³) auf das 3- bis 5fache.",
 }
 assert set(PRESETS) == set(PRESET_HELP) and all(p["dmax"] in DMAX_CHOICES and p["target"] in TARGETS for p in PRESETS.values())
 

@@ -69,11 +69,11 @@ def test_cost_verdict_names_the_step_times_the_slopes_and_the_counts():
     assert "mindestens zwei Dimensionen ab d = 16" in ev.verdict_cost(rows[:1], ev.slopes(rows[:1]))[1]
 
 
-def test_steps_verdict_shows_the_ratio_of_nine_digits_to_three_and_no_accuracy_crossing():
+def test_steps_verdict_shows_the_ratio_of_nine_digits_to_three_and_no_accuracy_claim():
     kind, text = ev.verdict_steps(_rows())
     assert kind == "info"
     for part in ("zwischen 23 und 38 Newton-Schritte (bei d = 32: 23, 33, 38 für Wertfehler 1·10⁻³, 1·10⁻⁶, 1·10⁻⁹)", "ADMM braucht bei d = 32 91, 372, 667 Schritte, von 10⁻³ bis 10⁻⁹ das 7fache",
-                 "wächst es von 475 auf 372 bei 10⁻⁶", "bei 10⁻³ nicht billiger als bei 10⁻⁹ (23 gegen 38 Schritte)"):
+                 "wächst es von 475 auf 372 bei 10⁻⁶", "wächst mit dem Ziel nur langsam (23 gegen 38 Schritte von 10⁻³ bis 10⁻⁹)"):
         assert part in text, part
 
 

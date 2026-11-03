@@ -196,7 +196,7 @@ def verdict_steps(rows: list) -> tuple:
     return "info", (f"Die Barriere braucht über alle d zwischen {min(bar)} und {max(bar)} Newton-Schritte (bei d = {last['d']}: " + ", ".join(str(last["bar"][t]["steps"]) for t in C.TARGETS)
                     + f" für Wertfehler {tl}): kaum abhängig von d. ADMM braucht bei d = {last['d']} " + ", ".join(str(x) for x in a)
                     + f" Schritte, von 10⁻³ bis 10⁻⁹ das {de(a[-1] / a[0], 0)}fache; über die Dimensionen wächst es von {rows[0]['admm'][C.TARGETS[1]]['iterations']} auf {last['admm'][C.TARGETS[1]]['iterations']} bei 10⁻⁶. "
-                    f"Eine Kreuzung der Genauigkeit gibt es hier nicht: die Barriere ist bei 10⁻³ nicht billiger als bei 10⁻⁹ ({last['bar'][C.TARGETS[0]]['steps']} gegen {last['bar'][C.TARGETS[-1]]['steps']} Schritte).")
+                    f"Die Schrittzahl der Barriere wächst mit dem Ziel nur langsam ({last['bar'][C.TARGETS[0]]['steps']} gegen {last['bar'][C.TARGETS[-1]]['steps']} Schritte von 10⁻³ bis 10⁻⁹); ob die Genauigkeit die Kreuzung verschiebt, zeigt die Gesamtzeit je Ziel unten.")
 
 
 def verdict_structure(rows: list) -> tuple:
@@ -216,5 +216,5 @@ def verdict_solvers(table=C.SOLVER_TABLE) -> tuple:
     mid = next(r for r in table if r["d"] == 128)
     text = (f"Bei denselben Programmen braucht Clarabel (Innere Punkte) {min(steps_c)} bis {max(steps_c)} Schritte, SCS (ADMM mit Einbettung) {min(steps_s)} bis {max(steps_s)}. "
             f"Bei d = {mid['d']} liegt Clarabel mit {ms_text(mid['clarabel_ms'] / 1e3)} ms noch vor SCS ({ms_text(mid['scs6_ms'] / 1e3)} ms bei eps 10⁻⁶), bei d = {last['d']} braucht Clarabel {ms_text(last['clarabel_ms'] / 1e3)} ms "
-            f"und SCS {ms_text(last['scs6_ms'] / 1e3)} ms. Die Kreuzung der echten Löser liegt " + (f"bei d = {cross['d']}" if cross else "rechts der Tabelle") + ", also eine Größenordnung weiter rechts als die der eigenen dichten Barriere (Experiment 3).")
+            f"und SCS {ms_text(last['scs6_ms'] / 1e3)} ms. Die Kreuzung der echten Löser liegt " + (f"bei d = {cross['d']}" if cross else "rechts der Tabelle") + ", also etwa 4- bis 16-mal weiter rechts als die der eigenen dichten Barriere (Experiment 3). Das ist eine eingefrorene Einzelmessung; der Sprung der Clarabel-Zeit zwischen den letzten beiden Dimensionen ist nicht erklärt.")
     return "info", text

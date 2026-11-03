@@ -40,7 +40,7 @@ def test_the_help_texts_name_what_the_presets_produce():
     fine = ev.Settings(**C.PRESETS["Hohes Ziel 10⁻⁹: kaum später"])
     assert coarse.target == 1e-3 and fine.target == 1e-9 and coarse.dmax == fine.dmax == C.DEFAULT_DMAX
     big = ev.Settings(**C.PRESETS["Bis d = 64: ADMM liegt deutlich vorn"])
-    assert big.dmax == 64 and "15 Sekunden" in C.PRESET_HELP["Bis d = 64: ADMM liegt deutlich vorn"]
+    assert big.dmax == 64 and "15 bis 20 Sekunden" in C.PRESET_HELP["Bis d = 64: ADMM liegt deutlich vorn"]
 
 
 def test_permalink_takes_valid_values_and_drops_invalid_ones():

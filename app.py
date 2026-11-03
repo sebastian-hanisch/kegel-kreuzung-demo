@@ -56,10 +56,10 @@ with st.container(key="kopf"):
     st.title("⚖️ Splitting gegen Innere Punkte – wo kreuzen sich die Kosten, und hängt es an der Genauigkeit?")
 st.markdown(
     """
-**Die Kreuzung ist eine Frage der Größe und der Implementierung, nicht der Genauigkeit.** Dieselbe Kugel von `4d` Punkten in `d` Dimensionen ist ein Lorentz-Programm mit `d + 1` Variablen; die Barriere (Innere Punkte)
-braucht dafür etwa 20 bis 45 Newton-Schritte, ADMM einige hundert Schritte. Ein **Newton-Schritt** kostet `O(n d²)` (die Hesse-Blöcke des Kegels sind dicht), ein **ADMM-Schritt** mit dünn besetztem `A` nur `O(n d)`: wächst `d`,
-kippt die Gesamtzeit zugunsten von ADMM. Die Genauigkeit kreuzt dagegen nicht: ADMM braucht für `10⁻⁹` nur etwa das Zehnfache der Schritte von `10⁻³`, die Barriere für `10⁻⁹` nur das Doppelte von `10⁻³`.
-Gegen die echten Löser von cvxpy (Clarabel, SCS) liegt die Kreuzung etwa eine Größenordnung weiter rechts.
+**Die Kreuzung hängt vor allem an der Größe und der Implementierung; die Genauigkeit verschiebt sie auf dem Raster der Dimensionen nicht, schmälert aber den Vorsprung von ADMM.** Dieselbe Kugel von `4d` Punkten in `d` Dimensionen ist ein Lorentz-Programm mit `d + 1` Variablen; die Barriere (Innere Punkte)
+braucht dafür etwa 20 bis 45 Newton-Schritte, ADMM einige hundert Schritte. Ein **Newton-Schritt** rechnet mit `n (d + 1)²` Einträgen (die Hesse-Blöcke des Kegels sind dicht; der Code bildet sie mit dichten Produkten, das ist noch teurer), ein **ADMM-Schritt** mit dünn besetztem `A` mit `n (d + 1)`: wächst `d`,
+kippt die Gesamtzeit zugunsten von ADMM. Die Genauigkeit verschiebt die Kreuzung auf dem Raster nicht, schmälert aber den Vorsprung von ADMM (bei `d = 64` von etwa dem 25- bis 29fachen bei `10⁻³` auf das 3- bis 5fache bei `10⁻⁹`); ADMM braucht für `10⁻⁹` bei `d = 64` das 10fache der Schritte von `10⁻³`, die Barriere das 1,8fache.
+Gegen die echten Löser von cvxpy (Clarabel, SCS) liegt die Kreuzung nach einer eingefrorenen Einzelmessung etwa 4- bis 16-mal weiter rechts.
 Stück 10 der Reihe „Konvexe und konische Optimierung“; der Konvergenzpunkt von Innere Punkte und Erste Ordnung.
 
 Weiter unten: **fünf Experimente** (**🔬**), **🚧 Wo die Annahmen enden** und der Expander **📐 Mathematische Formulierung**.
@@ -86,7 +86,7 @@ with st.sidebar:
     sidebar_presets()  # Schnellstart oben, das aktive Preset ist hervorgehoben
     st.header("⚙️ Einstellungen")
     dmax = st.select_slider("Größte Dimension d", options=C.DMAX_CHOICES, key="dmax_select",
-                            help="Die Reihe läuft für d = 4, 8, 16, 32, 64 bis zu diesem Wert; bei 64 braucht die eigene dichte Barriere etwa 15 Sekunden.")
+                            help="Die Reihe läuft für d = 4, 8, 16, 32, 64 bis zu diesem Wert; bei 64 braucht die eigene dichte Barriere etwa 15 bis 20 Sekunden.")
     target = st.select_slider("Ziel: Wertfehler", options=C.TARGETS, key="target_select", format_func=sci, help="Bis zu welchem Wertfehler gegen R* beide Verfahren laufen (Ergebnis und Experiment 3).")
     seed = st.number_input("Zufalls-Seed der Wolke", *bounds("seed_input"), key="seed_input", step=1)
     st.button("🎲 Neue Wolke generieren", width="stretch", on_click=randomize_seed)
@@ -181,9 +181,9 @@ st.markdown(
     """
 | Annahme | Was passiert, wenn sie verletzt ist | Wer setzt an |
 |---|---|---|
-| **Splitting gewinnt bei grober, Innere Punkte bei hoher Genauigkeit** | Auf dieser Familie nicht: ADMM braucht für 10⁻⁹ nur etwa das Zehnfache der Schritte von 10⁻³, die Barriere nur das Doppelte; es gibt keine Kreuzung der Genauigkeit, nur eine der Größe (Experiment 2 und 3). | Stück 16 |
-| **Die Kreuzung liegt bei d ≈ 16 bis 32** | Nur für die eigene dichte Barriere gegen das eigene ADMM mit dünnem A. Die echten Löser kreuzen erst bei d ≈ 128 bis 256 (Experiment 5), weil Clarabel dünn besetzt rechnet. | – |
-| **Innere Punkte skalieren schlecht** | Nur bei dieser Familie: jede Kegelzeile berührt die gemeinsamen Variablen, die Faktorisierung füllt auf (Clarabel braucht bei d = 256 über 100 Sekunden für 19 Schritte). Bei Programmen mit dünn gekoppelten Kegeln ist das anders. | – |
+| **Splitting gewinnt bei grober, Innere Punkte bei hoher Genauigkeit** | Nur zum Teil: ADMM braucht bei d = 64 für 10⁻⁹ das 10fache der Schritte von 10⁻³ (bei kleinerem d das 3- bis 7fache), die Barriere das 1,8fache; die Kreuzung bleibt auf dem Raster bei d = 16 bis 32, aber der Vorsprung von ADMM bei d = 64 schrumpft von etwa dem 25- bis 29fachen auf das 3- bis 5fache (Experiment 2 und 3). | Stück 16 |
+| **Die Kreuzung liegt bei d ≈ 16 bis 32** | Nur für die eigene dichte Barriere gegen das eigene ADMM mit dünnem A. Die echten Löser kreuzen nach einer eingefrorenen Einzelmessung erst bei d ≈ 128 bis 256 (Experiment 5), vermutlich weil Clarabel dünn besetzt rechnet; der Sprung der Clarabel-Zeit von d = 128 auf 256 (158fache Zeit) ist nicht erklärt. | – |
+| **Innere Punkte skalieren schlecht** | Vermutlich nur bei dieser Familie: jede Kegelzeile berührt die gemeinsamen Variablen, die Faktorisierung füllt vermutlich auf (nicht gemessen; Clarabel braucht bei d = 256 über 100 Sekunden für 19 Schritte). Bei Programmen mit dünn gekoppelten Kegeln ist das anders. | – |
 | **Ein ADMM-Schritt ist immer um den Faktor d billiger** | Bei kleinem d verdeckt fester Aufwand (Python, kleine Matrizen) die Steigung; gemessen ist bis d = 64 eine Steigung unter 1, die Vormessung bis d = 128 etwa 1,5 bis 1,8. | – |
 | **ADMM ist ohne Weiteres schnell** | Nur mit dünn besetztem A: dasselbe Verfahren mit dichtem A ist bei d = 64 deutlich langsamer (Experiment 4); der Gewinn kommt aus der Struktur. | – |
 | **Die Familie ist typisch** | Eine Familie, ein Kegel (Lorentz), ein Satz gemeinsamer Variablen. Lasso, LP oder Probleme mit einem Kegel je Variable kreuzen woanders; PDLP (nur LP) und GPUs sind hier nicht gemessen. | Stück 16 |
@@ -199,12 +199,12 @@ with st.expander("📐 Mathematische Formulierung"):
 **Die Familie.** $\min R$ unter $\|x_i - c\|_2 \le R$ für $i = 1, \dots, n$ mit $x_i \in \mathbb{R}^d$ und $n = 4d$. In Kegelform: Variablen $(c, R) \in \mathbb{R}^{d+1}$, je Punkt der Lorentz-Block $s_i = (R;\, x_i - c) \in K_{d+1}$,
 also $A \in \mathbb{R}^{n(d+1) \times (d+1)}$ mit $n(d+1)$ Einträgen ungleich null (ein $-1$ für $R$ und $d$ Einsen für $c$ je Punkt).
 
-**Kosten je Schritt.** Ein Newton-Schritt der Barriere löst $(A^\top H A)\,\Delta x = -g$ mit der blockdiagonalen Hesse-Matrix $H$ der Lorentz-Barriere. Jeder Block von $H$ ist dicht von der Größe $(d+1)^2$: das Zusammensetzen kostet
-$O(n\,d^2)$ Einträge. Ein ADMM-Schritt rechnet $A x$ und $A^\top v$ (je $O(\mathrm{nnz}(A)) = O(n\,d)$), eine Projektion je Kegel ($O(d)$) und ein $(d{+}1)\times(d{+}1)$-Produkt mit $(A^\top A)^{-1}$: $O(n\,d)$ insgesamt.
+**Kosten je Schritt.** Ein Newton-Schritt der Barriere löst $(A^\top H A)\,\Delta x = -g$ mit der blockdiagonalen Hesse-Matrix $H$ der Lorentz-Barriere. Jeder Block von $H$ ist dicht von der Größe $(d+1)^2$: das sind
+$n\,(d+1)^2$ Einträge (der Code bildet sie mit dichten Produkten, das kostet mehr Rechenoperationen als diese Zählung). Ein ADMM-Schritt rechnet $A x$ und $A^\top v$ (je $O(\mathrm{nnz}(A)) = O(n\,d)$), eine Projektion je Kegel ($O(d)$) und ein $(d{+}1)\times(d{+}1)$-Produkt mit $(A^\top A)^{-1}$: $O(n\,d)$ insgesamt.
 Das Verhältnis ist $d + 1$.
 
-**Gesamtzeit.** Zeit $\approx$ Schritte $\times$ Kosten je Schritt. Für die Barriere sind die Schritte nahezu unabhängig von $d$ (die Konvergenz hängt an $\sqrt{\nu}$ und am Ziel, nicht an der Dimension der Variablen), für ADMM wachsen sie langsam mit $d$.
-Die Kreuzung ist die Dimension, bei der $\text{Schritte}_{\text{ADMM}} \cdot O(n d) = \text{Schritte}_{\text{Barriere}} \cdot O(n d^2)$.
+**Gesamtzeit.** Zeit $\approx$ Schritte $\times$ Kosten je Schritt. Für die Barriere sind die Schritte in dieser Messung nahezu unabhängig von $d$ ($\nu = 8d$ wächst, die Schrittzahl kaum; die Worst-Case-Schranke wäre $O(\sqrt{\nu}\log(1/\varepsilon))$, für das hier verwendete Verfahren mit großen Schritten gilt sie nicht), für ADMM wachsen sie langsam mit $d$.
+Die Kreuzung ist die Dimension, bei der $\text{Schritte}_{\text{ADMM}} \cdot n d = \text{Schritte}_{\text{Barriere}} \cdot n d^2$ (gezählte Einträge, soweit sie die Zeit bestimmen; bei kleinem $d$ tut es fester Aufwand).
 
 **Literatur.** P. J. Goulart, Y. Chen: *Clarabel: An interior-point solver for conic programs with quadratic objectives*, arXiv:2405.12762 (Preprint; die Zeitschriftenfassung ist hier nicht geprüft).
 B. O'Donoghue, E. Chu, N. Parikh, S. Boyd: *Conic Optimization via Operator Splitting and Homogeneous Self-Dual Embedding*, Journal of Optimization Theory and Applications 169 (3), 2016, S. 1042–1068 (SCS).
